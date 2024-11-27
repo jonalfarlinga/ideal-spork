@@ -1,5 +1,6 @@
 import pygame
 import os
+from random import choice
 from game import (  # pygame_init() and constants setup in game.py
     CLOCK,
     FPS,
@@ -10,7 +11,7 @@ from game import (  # pygame_init() and constants setup in game.py
 from screen_writer import write_headline
 from entities import Character, Beast
 from hud import HUD
-from ai import target_next_active
+from ai import target_next_active, target_basic, target_weakest
 
 
 def main():
@@ -61,33 +62,86 @@ def main():
 
 def setup_test():
     # Set up entities
-    image = pygame.image.load(os.path.join("assets", "blue.png"))
-    image = pygame.transform.scale_by(image, 0.6)
-    image = pygame.transform.flip(image, True, False)
-    image.set_colorkey(VIOLETGREY)
-    player = Character("Blue", image, (75, 40), 4, 5, 160)
+    units = [
+        {
+            "name": "Blue",
+            "file": "blue.png",
+            "resilience": 4,
+            "speed": 160,
+            "action_dice": 5,
+            "p_bst": 0,
+            "def_p": 0,
+            "w_bst": 0,
+        },
+        {
+            "name": "Red",
+            "file": "red.png",
+            "resilience": 5,
+            "speed": 95,
+            "action_dice": 5,
+            "p_bst": 1,
+            "def_p": 0,
+            "w_bst": 0,
+        },
+        {
+            "name": "Green",
+            "file": "green.png",
+            "resilience": 6,
+            "speed": 80,
+            "action_dice": 5,
+            "p_bst": 1,
+            "def_p": 1,
+            "w_bst": 0,
+        },
+        {
+            "name": "White",
+            "file": "white.png",
+            "resilience": 5,
+            "speed": 75,
+            "action_dice": 5,
+            "p_bst": 0,
+            "def_p": 0,
+            "w_bst": 1,
+        },
+    ]
+    for i, unit in enumerate(units):
+        image = pygame.image.load(os.path.join("assets", unit["file"]))
+        image = pygame.transform.scale_by(image, 0.6)
+        image.set_colorkey(VIOLETGREY)
+        GAME.player_set.append(Character(
+            unit["name"],
+            image,
+            (75, 40 + i * 110),
+            unit["resilience"],
+            unit["action_dice"],
+            unit["speed"],
+            p_bst=unit["p_bst"],
+            def_p=unit["def_p"],
+            ai=choice([target_next_active, target_basic, target_weakest]),
+        ))
 
-    image = pygame.image.load(os.path.join("assets", "red.png"))
-    image = pygame.transform.scale_by(image, 0.6)
-    image.set_colorkey(VIOLETGREY)
-    red = Character("Red", image, (75, 150), 5, 5, 95, p_bst=1)
-
-    image = pygame.image.load(os.path.join("assets", "green.png"))
-    image = pygame.transform.scale_by(image, 0.6)
-    image.set_colorkey(VIOLETGREY)
-    green = Character("Green", image, (75, 260), 6, 5, 80, p_bst=1, def_p=1)
-
-    image = pygame.image.load(os.path.join("assets", "white.png"))
-    image = pygame.transform.scale_by(image, 0.6)
-    image.set_colorkey(VIOLETGREY)
-    white = Character("White", image, (75, 370), 5, 5, 75, w_bst=1)
+    for i, unit in enumerate(units):
+        image = pygame.image.load(os.path.join("assets", unit["file"]))
+        image = pygame.transform.scale_by(image, 0.6)
+        image.set_colorkey(VIOLETGREY)
+        GAME.enemy_set.append(Character(
+            "enemy" + unit["name"],
+            image,
+            (350, 40 + i * 110),
+            unit["resilience"],
+            unit["action_dice"],
+            unit["speed"],
+            p_bst=unit["p_bst"],
+            def_p=unit["def_p"],
+            ai=choice([target_next_active, target_basic, target_weakest]),
+        ))
 
     image = pygame.image.load(os.path.join("assets", "beast.png"))
     image.set_colorkey(VIOLETGREY)
-    kronk = Beast("Kronk", image, (350, 80), 10, 6, 85, ai=target_next_active, p_bst=2, def_p=2)
-
-    GAME.player_set = [player, red, green, white]
-    GAME.enemy_set = [kronk]
+    kronk = Beast(
+        "Kronk", image, (350, 80), 10, 6, 85, ai=target_next_active, p_bst=2, def_p=2
+    )
+    print(kronk)
 
 
 if __name__ == "__main__":

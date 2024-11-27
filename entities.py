@@ -46,10 +46,10 @@ class Character:
             image = pygame.transform.grayscale(image)
         screen.blit(image, (self.x, self.y))
         write_headline(screen, self.name, (self.x + 25, self.y - 25))
-        write_text(
+        write_headline(
             screen,
-            f"Resilience: {self.resilience}",
-            (self.x + self.sprite.get_width() + 10, self.y + 5),
+            str(self.resilience),
+            (self.x - 25, self.y + 25),
         )
         write_text(
             screen,
