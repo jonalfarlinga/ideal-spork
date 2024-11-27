@@ -1,7 +1,8 @@
+import ai
+import pygame
 from screen_writer import write_text, write_headline
 from random import choice, randint
 from hud import HUD
-import ai
 
 
 class Character:
@@ -40,12 +41,30 @@ class Character:
         return self.name
 
     def draw(self, screen):
-        write_headline(screen, self.name, (self.x - 25, self.y - 25))
-        screen.blit(self.sprite, (self.x, self.y))
+        image = self.sprite
+        if self.resilience <= 0:
+            image = pygame.transform.grayscale(image)
+        screen.blit(image, (self.x, self.y))
+        write_headline(screen, self.name, (self.x + 25, self.y - 25))
         write_text(
             screen,
             f"Resilience: {self.resilience}",
-            (self.x - 10, self.y + self.sprite.get_height() + 10),
+            (self.x + self.sprite.get_width() + 10, self.y + 5),
+        )
+        write_text(
+            screen,
+            f"Power: {self.p_bst} Defense: {self.def_p}",
+            (self.x + self.sprite.get_width() + 10, self.y + 20),
+        )
+        write_text(
+            screen,
+            f"Accuracy: {self.a_bst} Defense: {self.def_a}",
+            (self.x + self.sprite.get_width() + 10, self.y + 35),
+        )
+        write_text(
+            screen,
+            f"Will: {self.w_bst} Defense: {self.def_w}",
+            (self.x + self.sprite.get_width() + 10, self.y + 50),
         )
 
     # Handle turns and turn order
@@ -57,10 +76,10 @@ class Character:
     def take_turn(self, game):
         self.turnmeter = 0
         if self.resilience > 0:
-            return self.attack(game.get_target(self))
+            return self.basic_attack(game.get_target(self))
 
     # handle attacks
-    def attack(self, target):
+    def basic_attack(self, target):
         attack_type = "P"
         if target:
             attack = {"P": self.p_bst, "A": self.a_bst, "W": self.w_bst}
@@ -73,7 +92,7 @@ class Character:
                 f"Attack type: {attack_type}."
             )
             HUD.log_message(f"    {self} deals {attack[attack_type]} damage! ")
-            target.hit(target.defend(damage, attack_type))
+            target.hit(damage, attack_type)
             if target.resilience <= 0:
                 self.target = None
         else:
@@ -88,7 +107,14 @@ class Character:
         )
         return max(damage - defense, 0)
 
-    def hit(self, damage):
+    def hit(self, damage, attack_type):
+        damage = self.defend(damage, attack_type)
+        if not damage:
+            HUD.log_message(f"    {self.name} takes 0 damage!")
+        else:
+            self.take_damage(damage)
+
+    def take_damage(self, damage):
         HUD.log_message(f"    {self.name} takes {damage} damage!")
         self.resilience -= damage
 
@@ -130,9 +156,7 @@ class Beast(Character):
             ai,
         )
 
-    def hit(self, damage):
-        if not damage:
-            HUD.log_message(f"    {self.name} takes 0 damage!")
+    def take_damage(self, damage):
         for _ in range(damage):
             target = randint(1, 6)
             match target:
@@ -143,7 +167,7 @@ class Beast(Character):
                     self.a_bst = max(self.w_bst - 1, 0)
                     self.resilience -= 1
                     HUD.log_message(
-                        f"    {self.name} loses 1 W boost" " and takes damage!"
+                        f"    {self.name} loses 1 W boost" " and 1 Resilience!"
                     )
                 case 3:
                     self.def_a = max(self.def_a - 1, 0)
@@ -152,7 +176,7 @@ class Beast(Character):
                     self.p_bst = max(self.p_bst - 1, 0)
                     self.resilience -= 1
                     HUD.log_message(
-                        f"    {self.name} loses 1 A boost" " and takes damage!"
+                        f"    {self.name} loses 1 A boost" " and 1 Resilience!"
                     )
                 case 5:
                     self.def_p = max(self.def_p - 1, 0)
@@ -161,7 +185,7 @@ class Beast(Character):
                     self.p_bst = max(self.p_bst - 1, 0)
                     self.resilience -= 1
                     HUD.log_message(
-                        f"    {self.name} loses 1 P boost" " and takes damage!"
+                        f"    {self.name} loses 1 P boost" " and 1 Resilience!"
                     )
         if self.resilience <= 0:
             self.turnmeter = 0

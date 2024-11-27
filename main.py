@@ -51,9 +51,7 @@ def main():
 
         # Draw entities
         screen.fill(BLACK)
-        for entity in GAME.player_set:
-            entity.draw(screen)
-        for entity in GAME.enemy_set:
+        for entity in entities:
             entity.draw(screen)
         HUD.draw(screen)
         pygame.display.flip()
@@ -64,22 +62,32 @@ def main():
 def setup_test():
     # Set up entities
     image = pygame.image.load(os.path.join("assets", "blue.png"))
-    image = pygame.transform.scale(image, (60, 60))
+    image = pygame.transform.scale_by(image, 0.6)
     image = pygame.transform.flip(image, True, False)
     image.set_colorkey(VIOLETGREY)
-    player = Character("Player", image, (100, 160), 5, 5, 110)
+    player = Character("Blue", image, (75, 40), 4, 5, 160)
+
     image = pygame.image.load(os.path.join("assets", "red.png"))
-    image = pygame.transform.scale(image, (60, 60))
+    image = pygame.transform.scale_by(image, 0.6)
     image.set_colorkey(VIOLETGREY)
-    pygame.transform.scale(image, (60, 60))
-    enemy = Character("Enemy", image, (100, 40), 5, 5, 100)
+    red = Character("Red", image, (75, 150), 5, 5, 95, p_bst=1)
 
-    image = pygame.image.load(os.path.join("assets", "mech.png"))
+    image = pygame.image.load(os.path.join("assets", "green.png"))
+    image = pygame.transform.scale_by(image, 0.6)
     image.set_colorkey(VIOLETGREY)
-    mech = Beast("Mech", image, (250, 80), 6, 5, 85, ai=target_next_active)
+    green = Character("Green", image, (75, 260), 6, 5, 80, p_bst=1, def_p=1)
 
-    GAME.player_set = [player, enemy]
-    GAME.enemy_set = [mech]
+    image = pygame.image.load(os.path.join("assets", "white.png"))
+    image = pygame.transform.scale_by(image, 0.6)
+    image.set_colorkey(VIOLETGREY)
+    white = Character("White", image, (75, 370), 5, 5, 75, w_bst=1)
+
+    image = pygame.image.load(os.path.join("assets", "beast.png"))
+    image.set_colorkey(VIOLETGREY)
+    kronk = Beast("Kronk", image, (350, 80), 10, 6, 85, ai=target_next_active, p_bst=2, def_p=2)
+
+    GAME.player_set = [player, red, green, white]
+    GAME.enemy_set = [kronk]
 
 
 if __name__ == "__main__":

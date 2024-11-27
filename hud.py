@@ -58,10 +58,10 @@ class HUDBox:
 
     def scroll_log(self, up):
         if up:
+            self.index = min(self.index + 1, self.count - 10)
+        else:
             self.index = max(self.index - 1, 0)
             self.index = min(self.index, self.count)
-        else:
-            self.index = min(self.index + 1, self.count - 10)
 
     def clear_order(self):
         self.orderbox.clear()
