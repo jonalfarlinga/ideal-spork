@@ -26,32 +26,29 @@ class Logbox:
 
 class HUDBox:
     def __init__(self):
-        self.logbox_screen = pygame.Surface((600, 140))
+        self.logbox_screen = pygame.Surface((550, 140))
         self.logbox = Logbox(self.logbox_screen)
-        self.order_screen = pygame.Surface((100, 400))
+        self.order_screen = pygame.Surface((200, 150))
         self.orderbox = Logbox(self.order_screen)
+        self.action_screen = pygame.Surface((200, 250))
+        self.action_box = Logbox(self.action_screen)
         self.count = 0
+        # index is the count back from most recent message to last displayed
         self.index = 0
 
     def draw(self, screen):
         self.logbox.draw(self.index)
-        self.orderbox.draw(len(self.orderbox.content))
+        self.orderbox.draw(0)
+        self.action_box.draw(0)
         screen.blit(self.logbox_screen, (50, 450))
-        screen.blit(self.order_screen, (675, 100))
+        screen.blit(self.order_screen, (575, 10))
+        screen.blit(self.action_screen, (575, 180))
 
     def log_message(self, message):
         self.count += 1
         if self.index:
             self.index += 1
         self.logbox.add_message(f"{self.count}: {message}")
-
-    def set_order(self, entities):
-        messages = []
-        for entity in entities:
-            messages.append(f"{entity.turnmeter}: {entity.name}")
-        self.clear_order()
-        for message in messages:
-            self.orderbox.add_message(message)
 
     def clear_log(self):
         self.logbox.clear()
@@ -63,8 +60,27 @@ class HUDBox:
             self.index = max(self.index - 1, 0)
             self.index = min(self.index, self.count)
 
+    def set_order(self, entities):
+        messages = []
+        for entity in entities:
+            messages.append(f"{entity.turnmeter}: {entity.name}")
+        self.clear_order()
+        for message in messages:
+            self.orderbox.add_message(message)
+
     def clear_order(self):
         self.orderbox.clear()
+
+    def set_actions(self, entity):
+        self.clear_actions()
+        for i, action in enumerate(entity.actions):
+            self.action_box.add_message(
+                f"{i+1}: {action['name']} - CD: "
+                f"{entity.cooldowns[action['name']]}/{action['cooldown']}"
+            )
+
+    def clear_actions(self):
+        self.action_box.clear()
 
 
 HUD = HUDBox()

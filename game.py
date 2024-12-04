@@ -37,6 +37,9 @@ GAME = Game()
 # Set up colors
 VIOLETGREY = (28, 36, 59)
 BLACK = (0, 0, 0)
+GREY = (128, 128, 128)
+RED = (255, 0, 0)
+GOLD = (255, 215, 0)
 
 # Set up logo
 path = os.path.join("assets", "blue.png")

@@ -3,6 +3,7 @@ import pygame
 from screen_writer import write_text, write_headline
 from random import choice, randint
 from hud import HUD
+from game import GAME, GREY, RED, GOLD
 
 
 class Character:
@@ -24,6 +25,7 @@ class Character:
     ):
         self.name = name
         self.resilience = resilience
+        self.max_resilience = resilience
         self.action_dice = action_dice
         self.speed = speed
         self.def_p = def_p
@@ -36,20 +38,42 @@ class Character:
         self.sprite = sprite
         self.x, self.y = position
         self.turnmeter = 0
+        self.cooldowns = {}
+        self.actions = [
+            {"name": "Basic Attack", "cooldown": 0, "action": self.basic_attack}  # noqa
+        ]
 
     def __str__(self):
         return self.name
 
-    def draw(self, screen):
+    def draw(self, screen, your_turn=False):
+        border = GOLD if your_turn else GREY
+        pygame.draw.rect(
+            screen,
+            border,
+            pygame.Rect(
+                self.x - 2,
+                self.y - 2,
+                self.sprite.get_width() + 4,
+                self.sprite.get_height() + 4,
+            ),
+        )
         image = self.sprite
         if self.resilience <= 0:
             image = pygame.transform.grayscale(image)
         screen.blit(image, (self.x, self.y))
+
+        res_bar = pygame.Rect(self.x - 15, self.y - 1, 7, 52)
+        pygame.draw.rect(screen, GREY, res_bar)
+        cur_res_bar = int(self.resilience / self.max_resilience * 50)
+        res_bar = pygame.Rect(self.x - 14, self.y + 50 - cur_res_bar, 5, cur_res_bar)  # noqa
+        pygame.draw.rect(screen, RED, res_bar)
+
         write_headline(screen, self.name, (self.x + 25, self.y - 25))
         write_headline(
             screen,
             str(self.resilience),
-            (self.x - 25, self.y + 25),
+            (self.x - 25, self.y + 52),
         )
         write_text(
             screen,
@@ -73,10 +97,10 @@ class Character:
             self.turnmeter += self.speed
             return self.turnmeter
 
-    def take_turn(self, game):
+    def take_turn(self):
         self.turnmeter = 0
         if self.resilience > 0:
-            return self.basic_attack(game.get_target(self))
+            return self.basic_attack(GAME.get_target(self))
 
     # handle attacks
     def basic_attack(self, target):
@@ -101,9 +125,7 @@ class Character:
     # recieve damage
     def defend(self, damage, type):
         defense = (
-            self.def_p if type == "P"
-            else self.def_a if type == "A"
-            else self.def_w
+            self.def_p if type == "P" else self.def_a if type == "A" else self.def_w  # noqa
         )
         return max(damage - defense, 0)
 
