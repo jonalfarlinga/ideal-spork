@@ -1,31 +1,52 @@
 from random import shuffle
 
 
-def get_top(entity_set):
-    for target in entity_set:
+def get_low(target_set):
+    for target in target_set:
         if target.resilience > 0:
             return target
 
 
-def target_basic(entity_set):
-    return get_top(entity_set)
+def get_high(target_set):
+    for target in target_set[::-1]:
+        if target.resilience > 0:
+            return target
 
 
-def target_random(entity_set):
-    shuffle(entity_set)
-    return get_top(entity_set)
+def target_basic(target_set):
+    return get_low(target_set)
 
 
-def target_weakest(entity_set):
-    entity_set.sort(key=lambda entity: entity.resilience)
-    return get_top(entity_set)
+def target_random(target_set):
+    shuffle(target_set)
+    return get_low(target_set)
 
 
-def target_strongest(entity_set):
-    entity_set.sort(key=lambda entity: entity.resilience, reverse=True)
-    return get_top(entity_set)
+def target_weakest(target_set):
+    target_set.sort(key=lambda entity: entity.resilience)
+    return get_low(target_set)
 
 
-def target_next_active(entity_set):
-    entity_set.sort(key=lambda entity: entity.turnmeter, reverse=True)
-    return get_top(entity_set)
+def target_strongest(target_set):
+    target_set.sort(key=lambda entity: entity.resilience)
+    return get_high(target_set)
+
+
+def target_next_active(target_set):
+    target_set.sort(key=lambda entity: entity.turnmeter)
+    return get_high(target_set)
+
+
+def target_weak_to_power(target_set):
+    target_set.sort(key=lambda entity: entity.def_p)
+    return target_weakest(target_set)
+
+
+def target_weak_to_accuracy(target_set):
+    target_set.sort(key=lambda entity: entity.def_a)
+    return target_weakest(target_set)
+
+
+def target_weak_to_will(target_set):
+    target_set.sort(key=lambda entity: entity.def_w)
+    return target_weakest(target_set)

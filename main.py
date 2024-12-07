@@ -1,6 +1,5 @@
 import pygame
 import os
-from random import choice
 from game import (  # pygame_init() and constants setup in game.py
     CLOCK,
     FPS,
@@ -10,14 +9,15 @@ from game import (  # pygame_init() and constants setup in game.py
 )
 from screen_writer import write_headline
 from entities import Character, Beast
-from characters import Caster, Retaliator
+from characters import Caster, Retaliator, Quick
 from hud import HUD
 from ai import (
     target_next_active,
-    target_basic,
     target_weakest,
-    target_random,
+    target_weak_to_will,
     target_strongest,
+    # target_basic,
+    # target_random,
 )
 
 
@@ -89,63 +89,52 @@ def setup_teams():
     # Set up entities
     from stable import units
 
-    for i, unit in enumerate(units):
+    def load_unit(unit, player, team_pos):
+        if player:
+            x_align = 75
+        else:
+            x_align = 350
         image = pygame.image.load(os.path.join("assets", unit["file"]))
         image = pygame.transform.scale_by(image, 0.6)
+        if not player:
+            image = pygame.transform.flip(image, True, False)
         c_type = Character
-        match unit["name"]:
+        ai = target_next_active
+        match unit["name"].split(" ")[-1]:
             case "White":
                 c_type = Caster
+                ai = target_weak_to_will
             case "Green":
                 c_type = Retaliator
-        GAME.player_set.append(
-            c_type(
-                unit["name"],
-                image,
-                (75, 40 + i * 110),
-                unit["resilience"],
-                unit["action_dice"],
-                unit["speed"],
-                p_bst=unit["p_bst"],
-                def_p=unit["def_p"],
-                w_bst=unit["w_bst"],
-                def_w=unit["def_w"],
-                ai=choice([target_next_active, target_basic, target_weakest]),
-            )
+                ai = target_strongest
+            case "Blue":
+                c_type = Quick
+                ai = target_weakest
+        return c_type(
+            unit["name"],
+            image,
+            (x_align, 40 + team_pos * 110),
+            unit["resilience"],
+            unit["action_dice"],
+            unit["speed"],
+            p_bst=unit.get("p_bst", 0),
+            def_p=unit.get("def_p", 0),
+            w_bst=unit.get("w_bst", 0),
+            def_w=unit.get("def_w", 0),
+            a_bst=unit.get("a_bst", 0),
+            def_a=unit.get("def_a", 0),
+            ai=ai,
         )
 
     for i, unit in enumerate(units):
-        image = pygame.image.load(os.path.join("assets", unit["file"]))
-        image = pygame.transform.scale_by(image, 0.6)
-        ai = choice(
-            [
-                target_next_active,
-                target_basic,
-                target_weakest,
-                target_strongest,
-                target_random,
-            ]
+        GAME.player_set.append(
+            load_unit(unit, True, i)
         )
-        c_type = Character
-        match unit["name"]:
-            case "White":
-                c_type = Caster
-            case "Green":
-                c_type = Retaliator
+
+    for i, unit in enumerate(units):
+        unit['name'] = f"Enemy {unit['name']}"
         GAME.enemy_set.append(
-            c_type(
-                "enemy" + unit["name"],
-                image,
-                (350, 40 + i * 110),
-                unit["resilience"],
-                unit["action_dice"],
-                unit["speed"],
-                p_bst=unit["p_bst"],
-                def_p=unit["def_p"],
-                w_bst=unit["w_bst"],
-                def_w=unit["def_w"],
-                ai=ai,
-            )
+            load_unit(unit, False, i)
         )
 
     image = pygame.image.load(os.path.join("assets", "beast.png"))

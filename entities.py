@@ -44,6 +44,7 @@ class Character:
         self.cooldowns = {}
         for action in self.actions:
             self.cooldowns[action["name"]] = 0
+        self.active = False
 
     def __str__(self):
         return self.name
@@ -100,10 +101,12 @@ class Character:
             return self.turnmeter
 
     def take_turn(self, action):
+        self.active = True
         if self.resilience > 0:
             selected_action = self.actions[action - 1]['action']
             selected_action(GAME.get_target(self))
         self.turnmeter = 0
+        self.active = False
 
     # handle attacks
     def basic_attack(self, target):
