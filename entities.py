@@ -38,10 +38,12 @@ class Character:
         self.sprite = sprite
         self.x, self.y = position
         self.turnmeter = 0
-        self.cooldowns = {}
         self.actions = [
             {"name": "Basic Attack", "cooldown": 0, "action": self.basic_attack}  # noqa
         ]
+        self.cooldowns = {}
+        for action in self.actions:
+            self.cooldowns[action["name"]] = 0
 
     def __str__(self):
         return self.name
@@ -97,10 +99,11 @@ class Character:
             self.turnmeter += self.speed
             return self.turnmeter
 
-    def take_turn(self):
-        self.turnmeter = 0
+    def take_turn(self, action):
         if self.resilience > 0:
-            return self.basic_attack(GAME.get_target(self))
+            selected_action = self.actions[action - 1]['action']
+            selected_action(GAME.get_target(self))
+        self.turnmeter = 0
 
     # handle attacks
     def basic_attack(self, target):
@@ -116,7 +119,7 @@ class Character:
                 f"Attack type: {attack_type}."
             )
             HUD.log_message(f"    {self} deals {attack[attack_type]} damage! ")
-            target.hit(damage, attack_type)
+            target.hit(damage, attack_type, self)
             if target.resilience <= 0:
                 self.target = None
         else:
@@ -129,7 +132,7 @@ class Character:
         )
         return max(damage - defense, 0)
 
-    def hit(self, damage, attack_type):
+    def hit(self, damage, attack_type, attacker):
         damage = self.defend(damage, attack_type)
         if not damage:
             HUD.log_message(f"    {self.name} takes 0 damage!")

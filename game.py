@@ -5,13 +5,19 @@ import os
 class Game:
     player_set = []
     enemy_set = []
+    turn_order = []
 
     def get_entities(self):
         return self.player_set + self.enemy_set
 
+    def get_turn_order(self):
+        if not self.turn_order:
+            self.turn_order = self.get_entities()
+        self.turn_order.sort(key=lambda entity: entity.turnmeter, reverse=True)
+        return self.turn_order
+
     def tick(self):
-        entities = self.get_entities()
-        entities.sort(key=lambda entity: entity.turnmeter, reverse=True)
+        entities = self.get_turn_order()
         if not entities or len(entities) == 0:
             return False
         if entities[0].turnmeter >= 1000:

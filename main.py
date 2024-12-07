@@ -10,6 +10,7 @@ from game import (  # pygame_init() and constants setup in game.py
 )
 from screen_writer import write_headline
 from entities import Character, Beast
+from characters import Caster, Retaliator
 from hud import HUD
 from ai import (
     target_next_active,
@@ -43,13 +44,28 @@ def main():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-            if event.type == pygame.KEYDOWN:
-                if waiting_input and event.key == pygame.K_SPACE:
-                    for entity in turn_order:
-                        if entity.turnmeter >= 1000:
-                            entity.take_turn()
+            if event.type == pygame.KEYDOWN and waiting_input:
+                waiting_input = False
+                match event.key:
+                    case pygame.K_1:
+                        if turn_order[0].turnmeter >= 1000:
+                            turn_order[0].take_turn(1)
                             break
-                    waiting_input = False
+                    case pygame.K_2:
+                        if turn_order[0].turnmeter >= 1000:
+                            turn_order[0].take_turn(2)
+                            break
+                    case pygame.K_3:
+                        if turn_order[0].turnmeter >= 1000:
+                            turn_order[0].take_turn(3)
+                            break
+                    case pygame.K_4:
+                        if turn_order[0].turnmeter >= 1000:
+                            turn_order[0].take_turn(4)
+                            break
+                    case _:
+                        waiting_input = True
+
             if event.type == pygame.MOUSEWHEEL:
                 if event.y > 0:
                     HUD.scroll_log(up=True)
@@ -71,14 +87,19 @@ def main():
 
 def setup_teams():
     # Set up entities
-    from characters import units
+    from stable import units
 
     for i, unit in enumerate(units):
         image = pygame.image.load(os.path.join("assets", unit["file"]))
         image = pygame.transform.scale_by(image, 0.6)
-        # image.set_colorkey(VIOLETGREY)
+        c_type = Character
+        match unit["name"]:
+            case "White":
+                c_type = Caster
+            case "Green":
+                c_type = Retaliator
         GAME.player_set.append(
-            Character(
+            c_type(
                 unit["name"],
                 image,
                 (75, 40 + i * 110),
@@ -87,6 +108,8 @@ def setup_teams():
                 unit["speed"],
                 p_bst=unit["p_bst"],
                 def_p=unit["def_p"],
+                w_bst=unit["w_bst"],
+                def_w=unit["def_w"],
                 ai=choice([target_next_active, target_basic, target_weakest]),
             )
         )
@@ -94,7 +117,6 @@ def setup_teams():
     for i, unit in enumerate(units):
         image = pygame.image.load(os.path.join("assets", unit["file"]))
         image = pygame.transform.scale_by(image, 0.6)
-        # image.set_colorkey(VIOLETGREY)
         ai = choice(
             [
                 target_next_active,
@@ -104,8 +126,14 @@ def setup_teams():
                 target_random,
             ]
         )
+        c_type = Character
+        match unit["name"]:
+            case "White":
+                c_type = Caster
+            case "Green":
+                c_type = Retaliator
         GAME.enemy_set.append(
-            Character(
+            c_type(
                 "enemy" + unit["name"],
                 image,
                 (350, 40 + i * 110),
@@ -114,6 +142,8 @@ def setup_teams():
                 unit["speed"],
                 p_bst=unit["p_bst"],
                 def_p=unit["def_p"],
+                w_bst=unit["w_bst"],
+                def_w=unit["def_w"],
                 ai=ai,
             )
         )
