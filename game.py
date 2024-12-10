@@ -7,6 +7,12 @@ class Game:
     enemy_set = []
     turn_order = []
 
+    def get_team(self, entity):
+        if entity in self.player_set:
+            return self.player_set
+        else:
+            return self.enemy_set
+
     def get_entities(self):
         return self.player_set + self.enemy_set
 
@@ -48,8 +54,14 @@ RED = (255, 0, 0)
 GOLD = (255, 215, 0)
 
 # Set up logo
-path = os.path.join("assets", "blue.png")
+path = os.path.join("ideal-spork", "assets", "blue.png")
 logo = pygame.image.load(path)
 logo.set_colorkey(VIOLETGREY)
 pygame.display.set_icon(logo)
 pygame.display.set_caption("Game")
+
+# Set up Constants
+ACTION_1 = 0
+ACTION_2 = 1
+ACTION_3 = 2
+ACTION_4 = 3

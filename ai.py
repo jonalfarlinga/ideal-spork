@@ -38,15 +38,15 @@ def target_next_active(target_set):
 
 
 def target_weak_to_power(target_set):
-    target_set.sort(key=lambda entity: entity.def_p)
+    target_set.sort(key=lambda entity: entity.a_defense)
     return target_weakest(target_set)
 
 
 def target_weak_to_accuracy(target_set):
-    target_set.sort(key=lambda entity: entity.def_a)
+    target_set.sort(key=lambda entity: entity.a_defense)
     return target_weakest(target_set)
 
 
 def target_weak_to_will(target_set):
-    target_set.sort(key=lambda entity: entity.def_w)
+    target_set.sort(key=lambda entity: entity.w_defense)
     return target_weakest(target_set)

@@ -25,6 +25,7 @@ units = [
         "action_dice": 50,
         "def_p": 10,
         "def_a": 10,
+        "def_w": 10,
     },
     {
         "name": "White",
