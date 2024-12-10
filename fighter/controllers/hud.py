@@ -1,4 +1,5 @@
 import pygame
+from ..constants import const as c
 
 
 class Logbox:
@@ -40,9 +41,12 @@ class HUDBox:
         self.logbox.draw(self.index)
         self.orderbox.draw(0)
         self.action_box.draw(0)
-        screen.blit(self.logbox_screen, (50, 450))
-        screen.blit(self.order_screen, (575, 10))
-        screen.blit(self.action_screen, (575, 180))
+        screen.blit(self.logbox_screen, (
+            c.BORDER + 50, c.SCREEN_HEIGHT - c.BORDER - 150))
+        screen.blit(self.order_screen, (
+            c.SCREEN_WIDTH - c.BORDER - 225, c.BORDER + 10))
+        screen.blit(self.action_screen, (
+            c.SCREEN_WIDTH - c.BORDER - 225, c.BORDER + 180))
 
     def log_message(self, message):
         self.count += 1

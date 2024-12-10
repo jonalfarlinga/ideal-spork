@@ -12,8 +12,6 @@ def roll_attack_dice(attacker):
     for _ in range(attacker.action_dice):
         t = choice(["P", "A", "W"])
         attack_roll[t] += 1
-    for t in attack_roll.keys():
-        attack_roll[t] = attack_roll[t] * attacker.get_boost(t)
     return attack_roll
 
 
@@ -21,14 +19,12 @@ def basic_attack(attacker, target):
     attack_type = "P"
     if target:
         attack_roll = roll_attack_dice(attacker)
-        damage = attack_roll[attack_type]
         HUD.log_message(
             f"{attacker} attacks {target} with {attack_roll}! "
             f"Attack type: {attack_type}."
         )
-        HUD.log_message(
-            f"    {attacker} deals {attack_roll[attack_type]} damage! "
-        )
+        damage = attack_roll[attack_type] * attacker.get_boost(attack_type)
+        HUD.log_message(f"    {attacker} deals {damage} damage! ")
         target.hit(damage, attack_type, attacker)
         if target.resilience <= 0:
             attacker.target = None
@@ -40,14 +36,12 @@ def basic_magic_attack(attacker, target):
     attack_type = "W"
     if target:
         attack_roll = roll_attack_dice(attacker)
-        damage = attack_roll[attack_type]
         HUD.log_message(
             f"{attacker.name} attacks {target.name} with {attack_roll}! "
             f"Attack type: {attack_type}."
         )
-        HUD.log_message(
-            f"    {attacker} deals {attack_roll[attack_type]} damage! "
-        )
+        damage = attack_roll[attack_type] * attacker.get_boost(attack_type)
+        HUD.log_message(f"    {attacker} deals {damage} damage! ")
         target.hit(damage, attack_type, attacker)
         if target.resilience <= 0:
             attacker.target = None
@@ -59,14 +53,12 @@ def basic_precise_attack(attacker, target):
     attack_type = "A"
     if target:
         attack_roll = roll_attack_dice(attacker)
-        damage = attack_roll[attack_type]
         HUD.log_message(
             f"{attacker.name} attacks {target.name} with {attack_roll}! "
             f"Attack type: {attack_type}."
         )
-        HUD.log_message(
-            f"    {attacker} deals {attack_roll[attack_type]} damage! "
-        )
+        damage = attack_roll[attack_type] * attacker.get_boost(attack_type)
+        HUD.log_message(f"    {attacker} deals {damage} damage! ")
         target.hit(damage, attack_type, attacker)
         if target.resilience <= 0:
             attacker.target = None

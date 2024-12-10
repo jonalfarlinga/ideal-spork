@@ -4,7 +4,8 @@ from .ai import target_basic
 from .attacks import basic_attack, basic_wave_attack
 from ..controllers.screen_writer import write_text, write_headline
 from ..controllers.hud import HUD
-from ..controllers.game import GAME, GREY, RED, GOLD
+from ..controllers.game import GAME
+from ..constants import color
 
 
 class Character:
@@ -55,7 +56,7 @@ class Character:
         return self.name
 
     def draw(self, screen, your_turn=False):
-        border = GOLD if your_turn else GREY
+        border = color.GOLD if your_turn else color.GREY
         pygame.draw.rect(
             screen,
             border,
@@ -71,13 +72,13 @@ class Character:
             image = pygame.transform.grayscale(image)
         screen.blit(image, (self.x, self.y))
 
-        res_bar = pygame.Rect(self.x - 15, self.y - 1, 7, 52)
-        pygame.draw.rect(screen, GREY, res_bar)
+        res_bar = pygame.Rect(self.x - 20, self.y - 1, 7, 52)
+        pygame.draw.rect(screen, color.GREY, res_bar)
         cur_res_bar = int(self.resilience / self.max_resilience * 50)
         res_bar = pygame.Rect(
-            self.x - 14, self.y + 50 - cur_res_bar, 5, cur_res_bar
+            self.x - 19, self.y + 50 - cur_res_bar, 5, cur_res_bar
         )
-        pygame.draw.rect(screen, RED, res_bar)
+        pygame.draw.rect(screen, color.RED, res_bar)
 
         self.draw_headlines(screen)
         self.draw_stats(screen)
@@ -87,7 +88,7 @@ class Character:
         write_headline(
             screen,
             str(self.resilience),
-            (self.x - 25, self.y + 52),
+            (self.x - 30, self.y + 52),
         )
 
     def draw_stats(self, screen):
@@ -116,6 +117,9 @@ class Character:
     def take_turn(self, action):
         self.active = True
         if self.resilience > 0:
+            if action >= len(self.actions):
+                self.active = False
+                return
             selected_action = self.actions[action]["action"]
             selected_action(self, GAME.get_target(self))
         self.turnmeter = 0
@@ -135,12 +139,12 @@ class Character:
     def hit(self, damage, attack_type, _):
         damage = self.defend_against(damage, attack_type)
         if not damage:
-            HUD.log_message(f"    {self.name} takes 0 damage!")
+            HUD.log_message(f"    {self.name} takes no damage!")
         else:
             self.take_damage(damage)
 
     def take_damage(self, damage):
-        HUD.log_message(f"    {self.name} takes {damage} damage!")
+        HUD.log_message(f"    {self.name} loses {damage} resilience!")
         self.resilience -= damage
 
         if self.resilience <= 0:
@@ -246,7 +250,7 @@ class Beast(Character):
                     sys_damage["a_boost"] = min(
                         sys_damage["a_boost"] + 1, self.a_boost - 1
                     )
-                    sys_damage['resilience'] += 1
+                    sys_damage["resilience"] += 1
                 case 5:
                     sys_damage["p_defense"] = min(
                         sys_damage["p_defense"] + 1, self.p_defense - 1
@@ -255,7 +259,7 @@ class Beast(Character):
                     sys_damage["p_boost"] = min(
                         sys_damage["p_boost"] + 1, self.p_boost - 1
                     )
-                    sys_damage['resilience'] += 1
+                    sys_damage["resilience"] += 1
         HUD.log_message(
             f"    {self.name} loses {sys_damage['resilience']} resilience!"
         )

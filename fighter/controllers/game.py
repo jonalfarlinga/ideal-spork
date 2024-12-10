@@ -1,5 +1,6 @@
 import pygame
 import os
+from ..constants import const as c
 
 
 class Game:
@@ -27,7 +28,10 @@ class Game:
         if not entities or len(entities) == 0:
             return False
         if entities[0].turnmeter >= 1000:
-            return True, entities
+            if entities[0] in self.player_set:
+                return True, entities
+            else:
+                entities[0].take_turn(c.ACTION_1)
         else:
             for entity in entities:
                 entity.tick_turnmeter()
@@ -42,25 +46,11 @@ class Game:
 
 pygame.init()
 
-FPS = 30
 CLOCK = pygame.time.Clock()
 GAME = Game()
-
-# Set up colors
-VIOLETGREY = (28, 36, 59)
-BLACK = (0, 0, 0)
-GREY = (128, 128, 128)
-RED = (255, 0, 0)
-GOLD = (255, 215, 0)
 
 # Set up logo
 path = os.path.join("assets", "blue.png")
 logo = pygame.image.load(path)
 pygame.display.set_icon(logo)
 pygame.display.set_caption("Game")
-
-# Set up Constants
-ACTION_1 = 0
-ACTION_2 = 1
-ACTION_3 = 2
-ACTION_4 = 3

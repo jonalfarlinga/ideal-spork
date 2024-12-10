@@ -1,14 +1,10 @@
 import pygame
 import os
+from .constants import const as c
+from .constants import color
 from .controllers.game import (
     GAME,
-    BLACK,
     CLOCK,
-    FPS,
-    ACTION_1,
-    ACTION_2,
-    ACTION_3,
-    ACTION_4,
 )
 from .controllers.screen_writer import write_headline
 from .entities.entities import Character, Beast
@@ -19,18 +15,14 @@ from .entities.ai import (
     target_weakest,
     target_weak_to_will,
     target_strongest,
-    # target_basic,
-    # target_random,
 )
 
 
 def main():
     setup_teams()
-
     # Create a surface and populate it
-    screen = pygame.display.set_mode((800, 600))
-    screen.fill(BLACK)
-    write_headline(screen, "Game", (300, 100))
+    screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
+    screen.fill(color.BLACK)
     for entity in GAME.player_set:
         entity.draw(screen)
     for entity in GAME.enemy_set:
@@ -52,19 +44,19 @@ def main():
                 match event.key:
                     case pygame.K_1:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_1)
+                            turn_order[0].take_turn(c.ACTION_1)
                             break
                     case pygame.K_2:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_2)
+                            turn_order[0].take_turn(c.ACTION_2)
                             break
                     case pygame.K_3:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_3)
+                            turn_order[0].take_turn(c.ACTION_3)
                             break
                     case pygame.K_4:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_4)
+                            turn_order[0].take_turn(c.ACTION_4)
                             break
                     case _:
                         waiting_input = True
@@ -76,7 +68,8 @@ def main():
                     HUD.scroll_log(up=False)
 
         # Draw entities
-        screen.fill(BLACK)
+        screen.fill(color.BLACK)
+        write_headline(screen, "Fight!", (300, 20))
         turn_order[0].draw(screen, your_turn=waiting_input)
         if waiting_input:
             HUD.set_actions(turn_order[0])
@@ -85,7 +78,7 @@ def main():
         HUD.draw(screen)
         pygame.display.flip()
 
-        CLOCK.tick(FPS)
+        CLOCK.tick(c.FPS)
 
 
 def setup_teams():
@@ -94,9 +87,9 @@ def setup_teams():
 
     def load_unit(unit, player, team_pos):
         if player:
-            x_align = 75
+            x_align = c.BORDER + c.PLAYER_COLUMN
         else:
-            x_align = 350
+            x_align = c.BORDER + c.ENEMY_COLUMN
         image = pygame.image.load(
             os.path.join("assets", unit["file"])
         )
@@ -118,7 +111,7 @@ def setup_teams():
         return c_type(
             unit["name"],
             image,
-            (x_align, 40 + team_pos * 110),
+            (x_align, c.TOP_PADDING + team_pos * 110),
             unit["resilience"],
             unit["action_dice"],
             unit["speed"],
@@ -133,6 +126,8 @@ def setup_teams():
 
     for i, unit in enumerate(units):
         GAME.player_set.append(load_unit(unit, True, i))
+        # unit['name'] = f"Enemy {unit['name']}"
+        # GAME.enemy_set.append(load_unit(unit, False, i))
 
     image = pygame.image.load(
         os.path.join("assets", "beast.png")
@@ -141,7 +136,7 @@ def setup_teams():
     kronk = Beast(  # Kronk is a special 'Beast' entity
         "Kronk",
         image,
-        (350, 80),
+        (c.BORDER + c.ENEMY_COLUMN, c.TOP_PADDING + 40),
         70,
         60,
         90,
