@@ -1,6 +1,6 @@
 from random import choice
-from .hud import HUD
-from .game import GAME
+from ..controllers.hud import HUD
+from ..controllers.game import GAME
 
 
 def roll_attack_dice(attacker):

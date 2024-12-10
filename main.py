@@ -1,14 +1,11 @@
 import pygame
 import os
-from .controllers.game import (
-    GAME,
-    BLACK,
+from controllers.game import (  # pygame_init() and constants setup in game.py
     CLOCK,
     FPS,
-    ACTION_1,
-    ACTION_2,
-    ACTION_3,
-    ACTION_4,
+    VIOLETGREY,
+    BLACK,
+    GAME,
 )
 from .controllers.screen_writer import write_headline
 from .entities.entities import Character, Beast
@@ -52,19 +49,19 @@ def main():
                 match event.key:
                     case pygame.K_1:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_1)
+                            turn_order[0].take_turn(1)
                             break
                     case pygame.K_2:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_2)
+                            turn_order[0].take_turn(2)
                             break
                     case pygame.K_3:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_3)
+                            turn_order[0].take_turn(3)
                             break
                     case pygame.K_4:
                         if turn_order[0].turnmeter >= 1000:
-                            turn_order[0].take_turn(ACTION_4)
+                            turn_order[0].take_turn(4)
                             break
                     case _:
                         waiting_input = True
@@ -90,16 +87,14 @@ def main():
 
 def setup_teams():
     # Set up entities
-    from .stable import units
+    from stable import units
 
     def load_unit(unit, player, team_pos):
         if player:
             x_align = 75
         else:
             x_align = 350
-        image = pygame.image.load(
-            os.path.join("ideal-spork", "assets", unit["file"])
-        )
+        image = pygame.image.load(os.path.join("assets", unit["file"]))
         image = pygame.transform.scale_by(image, 0.6)
         if not player:
             image = pygame.transform.flip(image, True, False)
@@ -122,37 +117,33 @@ def setup_teams():
             unit["resilience"],
             unit["action_dice"],
             unit["speed"],
-            p_boost=unit.get("p_bst", 0),
-            p_defense=unit.get("def_p", 0),
-            w_boost=unit.get("w_bst", 0),
-            w_defense=unit.get("def_w", 0),
-            a_boost=unit.get("a_bst", 0),
-            a_defense=unit.get("def_a", 0),
+            p_bst=unit.get("p_bst", 0),
+            def_p=unit.get("def_p", 0),
+            w_bst=unit.get("w_bst", 0),
+            def_w=unit.get("def_w", 0),
+            a_bst=unit.get("a_bst", 0),
+            def_a=unit.get("def_a", 0),
             ai=ai,
         )
 
     for i, unit in enumerate(units):
-        GAME.player_set.append(load_unit(unit, True, i))
+        GAME.player_set.append(
+            load_unit(unit, True, i)
+        )
 
-    image = pygame.image.load(
-        os.path.join("ideal-spork", "assets", "beast.png")
-    )
+    for i, unit in enumerate(units):
+        unit['name'] = f"Enemy {unit['name']}"
+        GAME.enemy_set.append(
+            load_unit(unit, False, i)
+        )
+
+    image = pygame.image.load(os.path.join("assets", "beast.png"))
+    image.set_colorkey(VIOLETGREY)
     ai = target_next_active
-    kronk = Beast(  # Kronk is a special 'Beast' entity
-        "Kronk",
-        image,
-        (350, 80),
-        110,
-        50,
-        90,
-        ai=ai,
-        p_boost=20,
-        p_defense=30,
-        a_defense=15,
-        w_defense=0,
+    kronk = Beast(  # Kronk is a special entity
+        "Kronk", image, (350, 80), 10, 6, 85, ai=ai, p_bst=2, def_p=2
     )
     print(kronk)
-    GAME.enemy_set.append(kronk)
 
 
 if __name__ == "__main__":

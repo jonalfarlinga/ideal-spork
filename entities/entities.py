@@ -1,10 +1,10 @@
 from random import randint
 import pygame
 from .ai import target_basic
-from .screen_writer import write_text, write_headline
-from .hud import HUD
-from .game import GAME, GREY, RED, GOLD
 from .attacks import basic_attack, basic_wave_attack
+from ..controllers.screen_writer import write_text, write_headline
+from ..controllers.hud import HUD
+from ..controllers.game import GAME, GREY, RED, GOLD
 
 
 class Character:

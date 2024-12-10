@@ -1,6 +1,6 @@
 from .entities import Character
-from .hud import HUD
 from .attacks import basic_attack, basic_magic_attack, basic_precise_attack
+from ..controllers.hud import HUD
 
 
 class Caster(Character):
