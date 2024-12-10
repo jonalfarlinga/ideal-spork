@@ -16,12 +16,12 @@ class Character:
         resilience,
         action_dice,
         speed,
-        p_defense=0,
-        a_defense=0,
-        w_defense=0,
-        p_boost=0,
-        a_boost=0,
-        w_boost=0,
+        p_defense=100,
+        a_defense=100,
+        w_defense=100,
+        p_boost=100,
+        a_boost=100,
+        w_boost=100,
         ai=target_basic,
     ):
         self.name = name
@@ -128,7 +128,7 @@ class Character:
             if type == "P"
             else self.a_defense if type == "A" else self.w_defense
         )
-        return max(damage - defense, 0)
+        return int(damage / defense)
 
     # empty argument is for compatibility with other character types
     # expect the attacker's Character object
@@ -147,6 +147,14 @@ class Character:
             self.turnmeter = 0
             HUD.log_message(f"{self.name} is defeated!")
 
+    # getters and setters
+    def get_boost(self, type):
+        return (
+            self.p_boost
+            if type == "P"
+            else self.a_boost if type == "A" else self.w_boost
+        )
+
 
 class Beast(Character):
     def __init__(
@@ -154,15 +162,15 @@ class Beast(Character):
         name,
         sprite,
         position,
-        resilience=6,
-        action_dice=6,
-        speed=6,
-        p_defense=2,
-        a_defense=2,
-        w_defense=2,
-        p_boost=1,
-        a_boost=1,
-        w_boost=1,
+        resilience=60,
+        action_dice=60,
+        speed=90,
+        p_defense=120,
+        a_defense=120,
+        w_defense=120,
+        p_boost=110,
+        a_boost=110,
+        w_boost=110,
         ai=target_basic,
     ):
         super().__init__(
@@ -223,29 +231,29 @@ class Beast(Character):
             match target:
                 case 1:
                     sys_damage["w_defense"] = min(
-                        sys_damage["w_defense"] + 1, self.w_defense
+                        sys_damage["w_defense"] + 1, self.w_defense - 1
                     )
                 case 2:
                     sys_damage["w_boost"] = min(
-                        sys_damage["w_boost"] + 1, self.w_boost
+                        sys_damage["w_boost"] + 1, self.w_boost - 1
                     )
                     sys_damage["resilience"] += 1
                 case 3:
                     sys_damage["a_defense"] = min(
-                        sys_damage["a_defense"] + 1, self.a_defense
+                        sys_damage["a_defense"] + 1, self.a_defense - 1
                     )
                 case 4:
                     sys_damage["a_boost"] = min(
-                        sys_damage["a_boost"] + 1, self.a_boost
+                        sys_damage["a_boost"] + 1, self.a_boost - 1
                     )
                     sys_damage['resilience'] += 1
                 case 5:
                     sys_damage["p_defense"] = min(
-                        sys_damage["p_defense"] + 1, self.p_defense
+                        sys_damage["p_defense"] + 1, self.p_defense - 1
                     )
                 case 6:
                     sys_damage["p_boost"] = min(
-                        sys_damage["p_boost"] + 1, self.p_boost
+                        sys_damage["p_boost"] + 1, self.p_boost - 1
                     )
                     sys_damage['resilience'] += 1
         HUD.log_message(

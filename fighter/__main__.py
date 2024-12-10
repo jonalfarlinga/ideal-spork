@@ -98,7 +98,7 @@ def setup_teams():
         else:
             x_align = 350
         image = pygame.image.load(
-            os.path.join("ideal-spork", "assets", unit["file"])
+            os.path.join("assets", unit["file"])
         )
         image = pygame.transform.scale_by(image, 0.6)
         if not player:
@@ -122,12 +122,12 @@ def setup_teams():
             unit["resilience"],
             unit["action_dice"],
             unit["speed"],
-            p_boost=unit.get("p_bst", 0),
-            p_defense=unit.get("def_p", 0),
-            w_boost=unit.get("w_bst", 0),
-            w_defense=unit.get("def_w", 0),
-            a_boost=unit.get("a_bst", 0),
-            a_defense=unit.get("def_a", 0),
+            p_boost=unit.get("p_bst", 100),
+            p_defense=unit.get("def_p", 100),
+            w_boost=unit.get("w_bst", 100),
+            w_defense=unit.get("def_w", 100),
+            a_boost=unit.get("a_bst", 100),
+            a_defense=unit.get("def_a", 100),
             ai=ai,
         )
 
@@ -135,21 +135,21 @@ def setup_teams():
         GAME.player_set.append(load_unit(unit, True, i))
 
     image = pygame.image.load(
-        os.path.join("ideal-spork", "assets", "beast.png")
+        os.path.join("assets", "beast.png")
     )
     ai = target_next_active
     kronk = Beast(  # Kronk is a special 'Beast' entity
         "Kronk",
         image,
         (350, 80),
-        110,
-        50,
+        70,
+        60,
         90,
         ai=ai,
-        p_boost=20,
-        p_defense=30,
-        a_defense=15,
-        w_defense=0,
+        p_boost=150,
+        p_defense=170,
+        a_defense=130,
+        w_defense=110,
     )
     print(kronk)
     GAME.enemy_set.append(kronk)

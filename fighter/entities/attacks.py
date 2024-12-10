@@ -5,13 +5,15 @@ from ..controllers.game import GAME
 
 def roll_attack_dice(attacker):
     attack_roll = {
-        "P": attacker.p_boost,
-        "A": attacker.a_boost,
-        "W": attacker.w_boost,
+        "P": 0,
+        "A": 0,
+        "W": 0,
     }
     for _ in range(attacker.action_dice):
         t = choice(["P", "A", "W"])
         attack_roll[t] += 1
+    for t in attack_roll.keys():
+        attack_roll[t] = attack_roll[t] * attacker.get_boost(t)
     return attack_roll
 
 

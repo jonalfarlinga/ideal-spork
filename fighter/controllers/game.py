@@ -54,9 +54,8 @@ RED = (255, 0, 0)
 GOLD = (255, 215, 0)
 
 # Set up logo
-path = os.path.join("ideal-spork", "assets", "blue.png")
+path = os.path.join("assets", "blue.png")
 logo = pygame.image.load(path)
-logo.set_colorkey(VIOLETGREY)
 pygame.display.set_icon(logo)
 pygame.display.set_caption("Game")
 
