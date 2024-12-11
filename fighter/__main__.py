@@ -10,6 +10,7 @@ from .controllers.screen_writer import write_headline
 from .entities.entities import Character, Beast
 from .entities.classes import Caster, Retaliator, Quick
 from .controllers.hud import HUD
+from .menu import game_menu, win_menu
 from .entities.ai import (
     target_next_active,
     target_weakest,
@@ -19,7 +20,6 @@ from .entities.ai import (
 
 
 def main():
-    setup_teams()
     # Create a surface and populate it
     screen = pygame.display.set_mode((c.SCREEN_WIDTH, c.SCREEN_HEIGHT))
     screen.fill(color.BLACK)
@@ -29,8 +29,18 @@ def main():
         entity.draw(screen)
     HUD.draw(screen)
     pygame.display.flip()
-    waiting_input = False
 
+    while True:
+        selection = game_menu(screen)
+        match selection:
+            case c.RUN_GAME:
+                setup_teams()
+                run_game(screen)
+                selection = None
+
+
+def run_game(screen):
+    waiting_input = False
     # Main loop
     while True:
         waiting_input, turn_order = GAME.tick()
@@ -76,12 +86,16 @@ def main():
         for entity in turn_order[1:]:
             entity.draw(screen)
         HUD.draw(screen)
+        if GAME.game_over():
+            win_menu(screen)
+            break
         pygame.display.flip()
 
         CLOCK.tick(c.FPS)
 
 
 def setup_teams():
+    GAME.reset()
     # Set up entities
     from .stable import units
 
@@ -90,9 +104,7 @@ def setup_teams():
             x_align = c.BORDER + c.PLAYER_COLUMN
         else:
             x_align = c.BORDER + c.ENEMY_COLUMN
-        image = pygame.image.load(
-            os.path.join("assets", unit["file"])
-        )
+        image = pygame.image.load(os.path.join("assets", unit["file"]))
         image = pygame.transform.scale_by(image, 0.6)
         if not player:
             image = pygame.transform.flip(image, True, False)
@@ -129,9 +141,7 @@ def setup_teams():
         # unit['name'] = f"Enemy {unit['name']}"
         # GAME.enemy_set.append(load_unit(unit, False, i))
 
-    image = pygame.image.load(
-        os.path.join("assets", "beast.png")
-    )
+    image = pygame.image.load(os.path.join("assets", "beast.png"))
     ai = target_next_active
     kronk = Beast(  # Kronk is a special 'Beast' entity
         "Kronk",

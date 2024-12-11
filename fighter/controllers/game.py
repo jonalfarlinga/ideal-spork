@@ -8,6 +8,19 @@ class Game:
     enemy_set = []
     turn_order = []
 
+    def game_over(self):
+        player_lost = True
+        enemy_lost = True
+        for entity in self.player_set:
+            if entity.resilience > 0:
+                player_lost = False
+                break
+        for entity in self.enemy_set:
+            if entity.resilience > 0:
+                enemy_lost = False
+                break
+        return player_lost or enemy_lost
+
     def get_team(self, entity):
         if entity in self.player_set:
             return self.player_set
@@ -35,13 +48,18 @@ class Game:
         else:
             for entity in entities:
                 entity.tick_turnmeter()
-            return False, entities
+        return False, entities
 
     def get_target(self, entity):
         if entity in self.player_set:
             return entity.ai(self.enemy_set)
         else:
             return entity.ai(self.player_set)
+
+    def reset(self):
+        self.player_set = []
+        self.enemy_set = []
+        self.turn_order = []
 
 
 pygame.init()

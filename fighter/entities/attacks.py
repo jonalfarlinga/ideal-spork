@@ -74,3 +74,22 @@ def basic_wave_attack(attacker, target):
     for entity in target_team:
         if entity.resilience > 0:
             basic_attack(attacker, entity)
+
+
+def riposte_attack(attacker, target):
+    if target is None:
+        HUD.log_message(f"{attacker.name} has no target!")
+        return
+    attack_type = "A"
+    attack_roll = roll_attack_dice(attacker)
+    HUD.log_message(
+        f"{attacker.name} attacks {target.name} with {attack_roll}! "
+        f"Attack type: {attack_type}."
+    )
+    attacker.shield = max(attack_roll["W"] // 2, attacker.shield)
+    HUD.log_message(f"    {attacker.name} gains {attacker.shield} shield!")
+    damage = attack_roll[attack_type] * attacker.get_boost(attack_type)
+    HUD.log_message(f"    {attacker} deals {damage} damage! ")
+    target.hit(damage, attack_type, attacker)
+    if target.resilience <= 0:
+        attacker.target = None

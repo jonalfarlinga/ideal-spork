@@ -3,9 +3,9 @@ units = [
         "name": "Blue",
         "file": "blue.png",
         "resilience": 40,
-        "speed": 160,
+        "speed": 150,
         "action_dice": 50,
-        "def_p": 110,
+        "def_p": 90,
         "def_w": 115,
     },
     {

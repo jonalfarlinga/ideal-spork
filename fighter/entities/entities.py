@@ -44,13 +44,14 @@ class Character:
             {
                 "name": "Basic Attack",
                 "cooldown": 0,
-                "action": basic_attack,
+                "fn": basic_attack,
             }
         ]
         self.cooldowns = {
             "Basic Attack": 0,
         }
         self.active = False
+        self.shield = 0
 
     def __str__(self):
         return self.name
@@ -120,8 +121,17 @@ class Character:
             if action >= len(self.actions):
                 self.active = False
                 return
-            selected_action = self.actions[action]["action"]
-            selected_action(self, GAME.get_target(self))
+            selected_action = self.actions[action]
+            if self.cooldowns[selected_action["name"]] > 0:
+                self.active = False
+                return
+            self.cooldowns[selected_action["name"]] = selected_action[
+                "cooldown"
+            ]
+            selected_action["fn"](self, GAME.get_target(self))
+        for action in self.cooldowns:
+            if self.cooldowns[action] > 0:
+                self.cooldowns[action] -= 1
         self.turnmeter = 0
         self.active = False
 
@@ -145,6 +155,11 @@ class Character:
 
     def take_damage(self, damage):
         HUD.log_message(f"    {self.name} loses {damage} resilience!")
+        if self.shield > 0:
+            shield_block = min(self.shield, damage)
+            damage -= shield_block
+            self.shield -= shield_block
+            HUD.log_message(f"    {shield_block} blocked by shield!")
         self.resilience -= damage
 
         if self.resilience <= 0:
@@ -196,7 +211,7 @@ class Beast(Character):
             {
                 "name": "Basic Wave Attack",
                 "cooldown": 0,
-                "action": basic_wave_attack,
+                "fn": basic_wave_attack,
             }
         ]
         self.cooldowns = {

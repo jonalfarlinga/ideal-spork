@@ -1,5 +1,10 @@
 from .entities import Character
-from .attacks import basic_attack, basic_magic_attack, basic_precise_attack
+from .attacks import (
+    basic_attack,
+    basic_magic_attack,
+    basic_precise_attack,
+    riposte_attack,
+)
 from ..controllers.hud import HUD
 
 
@@ -10,7 +15,7 @@ class Caster(Character):
             {
                 "name": "Basic Magic Attack",
                 "cooldown": 0,
-                "action": basic_magic_attack,
+                "fn": basic_magic_attack,
             }
         ]
         self.cooldowns = {
@@ -37,9 +42,15 @@ class Quick(Character):
             {
                 "name": "Basic Precise Attack",
                 "cooldown": 0,
-                "action": basic_precise_attack,
-            }
+                "fn": basic_precise_attack,
+            },
+            {
+                "name": "Riposte Attack",
+                "cooldown": 3,
+                "fn": riposte_attack,
+            },
         ]
         self.cooldowns = {
             "Basic Precise Attack": 0,
+            "Riposte Attack": 0,
         }

@@ -8,6 +8,7 @@ class Const:
     TARGET_2 = 1
     TARGET_3 = 2
     TARGET_4 = 3
+    RUN_GAME = 0
     SCREEN_WIDTH = 1024
     SCREEN_HEIGHT = 800
     BORDER = 50
