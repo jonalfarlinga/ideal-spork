@@ -124,22 +124,13 @@ def setup_teams():
             unit["name"],
             image,
             (x_align, c.TOP_PADDING + team_pos * 110),
-            unit["resilience"],
-            unit["action_dice"],
-            unit["speed"],
-            p_boost=unit.get("p_bst", 100),
-            p_defense=unit.get("def_p", 100),
-            w_boost=unit.get("w_bst", 100),
-            w_defense=unit.get("def_w", 100),
-            a_boost=unit.get("a_bst", 100),
-            a_defense=unit.get("def_a", 100),
             ai=ai,
         )
 
     for i, unit in enumerate(units):
         GAME.player_set.append(load_unit(unit, True, i))
-        # unit['name'] = f"Enemy {unit['name']}"
-        # GAME.enemy_set.append(load_unit(unit, False, i))
+        unit['name'] = f"Enemy {unit['name']}"
+        GAME.enemy_set.append(load_unit(unit, False, i))
 
     image = pygame.image.load(os.path.join("assets", "beast.png"))
     ai = target_next_active
@@ -147,17 +138,10 @@ def setup_teams():
         "Kronk",
         image,
         (c.BORDER + c.ENEMY_COLUMN, c.TOP_PADDING + 40),
-        70,
-        60,
-        90,
         ai=ai,
-        p_boost=150,
-        p_defense=170,
-        a_defense=130,
-        w_defense=110,
     )
     print(kronk)
-    GAME.enemy_set.append(kronk)
+    # GAME.enemy_set.append(kronk)
 
 
 if __name__ == "__main__":

@@ -79,8 +79,8 @@ class HUDBox:
         self.clear_actions()
         for i, action in enumerate(entity.actions):
             self.action_box.add_message(
-                f"{i+1}: {action['name']} - CD: "
-                f"{entity.cooldowns[action['name']]}/{action['cooldown']}"
+                f"{i+1}: {action.name} - CD: "
+                f"{action.cur_cd}/{action.cooldown}"
             )
 
     def clear_actions(self):

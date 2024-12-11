@@ -2,6 +2,7 @@ from random import randint
 import pygame
 from .ai import target_basic
 from .attacks import basic_attack, basic_wave_attack
+from .actions import Action
 from ..controllers.screen_writer import write_text, write_headline
 from ..controllers.hud import HUD
 from ..controllers.game import GAME
@@ -14,9 +15,9 @@ class Character:
         name,
         sprite,
         position,
-        resilience,
-        action_dice,
-        speed,
+        resilience=50,
+        action_dice=50,
+        speed=100,
         p_defense=100,
         a_defense=100,
         w_defense=100,
@@ -26,10 +27,13 @@ class Character:
         ai=target_basic,
     ):
         self.name = name
+        self.active = False
         self.resilience = resilience
         self.max_resilience = resilience
+        self.shield = 0
         self.action_dice = action_dice
         self.speed = speed
+        self.turnmeter = 0
         self.p_defense = p_defense
         self.a_defense = a_defense
         self.w_defense = w_defense
@@ -39,21 +43,14 @@ class Character:
         self.ai = ai
         self.sprite = sprite
         self.x, self.y = position
-        self.turnmeter = 0
         self.actions = [
-            {
-                "name": "Basic Attack",
-                "cooldown": 0,
-                "fn": basic_attack,
-            }
+            Action("Basic Attack", 0, basic_attack),
         ]
-        self.cooldowns = {
-            "Basic Attack": 0,
-        }
-        self.active = False
-        self.shield = 0
 
     def __str__(self):
+        return self.name
+
+    def __repr__(self):
         return self.name
 
     def draw(self, screen, your_turn=False):
@@ -122,16 +119,13 @@ class Character:
                 self.active = False
                 return
             selected_action = self.actions[action]
-            if self.cooldowns[selected_action["name"]] > 0:
+            if selected_action.cur_cd > 0:
                 self.active = False
                 return
-            self.cooldowns[selected_action["name"]] = selected_action[
-                "cooldown"
-            ]
-            selected_action["fn"](self, GAME.get_target(self))
-        for action in self.cooldowns:
-            if self.cooldowns[action] > 0:
-                self.cooldowns[action] -= 1
+            selected_action.cur_cd = selected_action.cooldown
+            selected_action.fn(self, GAME.get_target(self))
+        for action in self.actions:
+            action.tick()
         self.turnmeter = 0
         self.active = False
 
@@ -178,45 +172,24 @@ class Character:
 class Beast(Character):
     def __init__(
         self,
-        name,
-        sprite,
-        position,
-        resilience=60,
-        action_dice=60,
-        speed=90,
-        p_defense=120,
-        a_defense=120,
-        w_defense=120,
-        p_boost=110,
-        a_boost=110,
-        w_boost=110,
-        ai=target_basic,
+        *args, **kwargs
     ):
-        super().__init__(
-            name,
-            sprite,
-            position,
-            resilience,
-            action_dice,
-            speed,
-            p_defense,
-            a_defense,
-            w_defense,
-            p_boost,
-            a_boost,
-            w_boost,
-            ai,
-        )
+        kwargs.update({
+            "resilience": 90,
+            "speed": 90,
+            "action_dice": 60,
+            "p_defense": 170,
+            "a_defense": 130,
+            "w_defense": 110,
+            "p_boost": 120,
+            "a_boost": 110,
+            "w_boost": 110,
+            "ai": target_basic,
+        })
+        super().__init__(*args, **kwargs)
         self.actions = [
-            {
-                "name": "Basic Wave Attack",
-                "cooldown": 0,
-                "fn": basic_wave_attack,
-            }
+            Action("Basic Wave Attack", 0, basic_wave_attack),
         ]
-        self.cooldowns = {
-            "Basic Wave Attack": 0,
-        }
 
     def draw_stats(self, screen):
         write_text(
