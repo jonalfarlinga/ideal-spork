@@ -1,3 +1,4 @@
+from ..controllers.hud import HUD
 from .entities import Character
 from .actions import Action
 from .attacks import (
@@ -8,7 +9,6 @@ from .attacks import (
     regenerate,
     fireball_attack,
 )
-from ..controllers.hud import HUD
 
 
 class Caster(Character):

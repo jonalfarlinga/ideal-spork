@@ -1,12 +1,12 @@
 from random import randint
 import pygame
-from .ai import target_basic
-from .attacks import basic_attack, basic_wave_attack
-from .actions import Action
 from ..controllers.screen_writer import write_text, write_headline
 from ..controllers.hud import HUD
 from ..controllers.game import GAME
 from ..constants import color
+from .ai import target_basic
+from .attacks import basic_attack, basic_wave_attack
+from .actions import Action
 
 
 class Character:
