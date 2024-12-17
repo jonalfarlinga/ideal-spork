@@ -4,6 +4,19 @@ from ..constants import const as c
 
 
 class Game:
+    '''
+    player_set: list of player entities
+    enemy_set: list of enemy entities
+    turn_order: list of entities in order of their turnmeter
+
+    game_over(): check if the game is over
+    get_team(entity): return the team of the entity
+    get_entities(): return all entities
+    get_turn_order(): return the turn order of the entities
+    tick(): tick the game
+    get_target(entity): return the target of the entity
+    reset(): reset the game
+    '''
     player_set = []
     enemy_set = []
     turn_order = []

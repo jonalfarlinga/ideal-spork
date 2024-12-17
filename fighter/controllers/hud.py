@@ -26,6 +26,23 @@ class Logbox:
 
 
 class HUDBox:
+    '''
+    logbox: An object that tracks and displays game logs
+    logbox_screen: the surface for the logbox
+    orderbox: An object that tracks and displays the turn order
+    order_screen: the surface for the orderbox
+    action_box: An object that displays actions available to the current entity
+    action_screen: the surface for the actionbox
+    count: the number of messages in the logbox
+    index: the index of the most recent message displayed
+
+    draw(): draws the HUD to the screen
+    log_message(message): adds a message to the logbox
+    clear_log(): clears the logbox
+    scroll_log(up): scrolls the logbox up or down
+    set_order(entities): sets the orderbox to the entities
+    clear_order(): clears the orderbox
+    '''
     def __init__(self):
         self.logbox_screen = pygame.Surface((550, 140))
         self.logbox = Logbox(self.logbox_screen)

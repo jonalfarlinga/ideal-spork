@@ -50,3 +50,15 @@ def target_weak_to_accuracy(target_set):
 def target_weak_to_will(target_set):
     target_set.sort(key=lambda entity: entity.w_defense)
     return target_weakest(target_set)
+
+
+TARGETING_AI = {
+    "target_basic": target_basic,
+    "target_random": target_random,
+    "target_weakest": target_weakest,
+    "target_strongest": target_strongest,
+    "target_next_active": target_next_active,
+    "target_weak_to_power": target_weak_to_power,
+    "target_weak_to_accuracy": target_weak_to_accuracy,
+    "target_weak_to_will": target_weak_to_will,
+}

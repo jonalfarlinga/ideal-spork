@@ -20,7 +20,7 @@ class Const:
 
     # App constants
     SCREEN_WIDTH = 1024
-    SCREEN_HEIGHT = 800
+    SCREEN_HEIGHT = 750
     BORDER = 50
     PLAYER_COLUMN = 25
     ENEMY_COLUMN = 325

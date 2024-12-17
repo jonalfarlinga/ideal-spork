@@ -1,5 +1,5 @@
 from ..controllers.hud import HUD
-from .entities import Character
+from .entities import Character, Beast
 from .actions import Action
 from .attacks import (
     basic_attack,
@@ -68,3 +68,12 @@ class Quick(Character):
             Action("Basic Precise Attack", 0, basic_precise_attack),
             Action("Riposte Attack", 2, riposte_attack),
         ]
+
+
+CLASSES = {
+    "Caster": Caster,
+    "Retaliator": Retaliator,
+    "Quick": Quick,
+    "Character": Character,
+    "Beast": Beast,
+}

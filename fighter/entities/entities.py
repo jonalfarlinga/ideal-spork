@@ -174,7 +174,7 @@ class Beast(Character):
         self,
         *args, **kwargs
     ):
-        kwargs.update({
+        stats = {
             "resilience": 90,
             "speed": 90,
             "action_dice": 60,
@@ -184,9 +184,9 @@ class Beast(Character):
             "p_boost": 120,
             "a_boost": 110,
             "w_boost": 110,
-            "ai": target_basic,
-        })
-        super().__init__(*args, **kwargs)
+        }
+        stats.update(kwargs)
+        super().__init__(*args, **stats)
         self.actions = [
             Action("Basic Wave Attack", 0, basic_wave_attack),
         ]
